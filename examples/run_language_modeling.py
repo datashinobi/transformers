@@ -683,6 +683,8 @@ def main():
         print('global rank', dist_rank)
         print('worldsize',world_size)
 
+        torch.cuda.set_device(dist_rank)
+        device = torch.device("cuda", dist_rank)
         torch.distributed.init_process_group(backend='nccl',
                                             init_method=dist_init_method,
                                             world_size=world_size, 
