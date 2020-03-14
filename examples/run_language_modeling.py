@@ -617,15 +617,18 @@ def main():
         help="For fp16: Apex AMP optimization level selected in ['O0', 'O1', 'O2', and 'O3']."
         "See details at https://nvidia.github.io/apex/amp.html",
     )
-    parser.add_argument("--local_rank", type=int, default=-1, help="For distributed training: local_rank")
+    parser.add_argument("--local_rank", type=str, default='-1', help="For distributed training: local_rank")
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
 
     parser.add_argument('--dist_url', type=str,help='url used to set up distributed training')
-    parser.add_argument('--node_count', default=1, type=int, help='number of compute nodes used for distributed training')
+    parser.add_argument('--node_count', default='1', type=str, help='number of compute nodes used for distributed training')
 
     args = parser.parse_args()
 
+    args.local_rank = int(args.local_rank)
+    args.node_count = int(args.node_count)
+    
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
         raise ValueError(
             "BERT and RoBERTa-like models do not have LM heads but masked LM heads. They must be run using the --mlm "
