@@ -687,7 +687,8 @@ def main():
                                             init_method=dist_init_method,
                                             world_size=world_size, 
                                             rank=dist_rank) 
-
+        args.n_gpu = torch.cuda.device_count()
+        
     if args.local_rank == -1 or args.no_cuda:
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = 0 if args.no_cuda else torch.cuda.device_count()
