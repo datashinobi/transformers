@@ -679,9 +679,7 @@ def main():
         dist_init_method = args.dist_url #'tcp://'+  
         dist_rank = device_id + len(gpu_ranks) * args.local_rank
         
-        print(f"dist_url {dist_init_method} ,deviceid {device_id}\ 
-              global rank { dist_rank} worldsize {world_size}\
-              numOfGPU's {len(gpu_ranks)} ")
+        print(f"dist_url {dist_init_method} deviceid {device_id} global rank { dist_rank} worldsize {world_size} numOfGPU's {len(gpu_ranks)}")
 
         torch.cuda.set_device(dist_rank)
         device = torch.device("cuda", dist_rank)
