@@ -620,6 +620,10 @@ def main():
     parser.add_argument("--local_rank", type=int, default=-1, help="For distributed training: local_rank")
     parser.add_argument("--server_ip", type=str, default="", help="For distant debugging.")
     parser.add_argument("--server_port", type=str, default="", help="For distant debugging.")
+
+    parser.add_argument('--dist_url', type=str,help='url used to set up distributed training')
+    parser.add_argument('--node_count', default=1, type=int, help='number of compute nodes used for distributed training')
+
     args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
@@ -661,10 +665,33 @@ def main():
         ptvsd.wait_for_attach()
 
     # Setup CUDA, GPU & distributed training
+    
+
+    # Are we running on multi nodes
+    if args.node_count>1 and not args.no_cuda:
+        print('distributed training multinodes')
+        device_id = torch.cuda.current_device()
+        gpu_ranks = list(range(torch.cuda.device_count()))
+        world_size = args.node_count * len(gpu_ranks)  
+        dist_init_method = 'tcp://'+ args.dist_url
+        dist_rank = device_id + len(gpu_ranks) * rank
+        
+        print('dist_url',dist_init_method)
+        print('deviceid',device_id)
+        print('global rank', dist_rank)
+        print('worldsize',world_size)
+
+        torch.distributed.init_process_group(backend='nccl',
+                                            init_method=dist_init_method,
+                                            world_size=world_size, 
+                                            rank=dist_rank) 
+
     if args.local_rank == -1 or args.no_cuda:
+
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = 0 if args.no_cuda else torch.cuda.device_count()
     else:  # Initializes the distributed backend which will take care of sychronizing nodes/GPUs
+        print('multi gpu single node training')
         torch.cuda.set_device(args.local_rank)
         device = torch.device("cuda", args.local_rank)
         torch.distributed.init_process_group(backend="nccl")
