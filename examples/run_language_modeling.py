@@ -670,13 +670,13 @@ def main():
     # Setup CUDA, GPU & distributed training
     
     # Are we running on multi nodes
-    if args.node_count>1 and not args.no_cuda:
+    if args.node_count > 1 and not args.no_cuda:
         print('distributed training multinodes')
         device_id = torch.cuda.current_device()
         gpu_ranks = list(range(torch.cuda.device_count()))
         world_size = args.node_count * len(gpu_ranks)  
         dist_init_method = args.dist_url #'tcp://'+  
-        dist_rank = device_id + len(gpu_ranks) * rank
+        dist_rank = device_id + len(gpu_ranks) * args.local_rank
         
         print('dist_url',dist_init_method)
         print('deviceid',device_id)
@@ -689,7 +689,6 @@ def main():
                                             rank=dist_rank) 
 
     if args.local_rank == -1 or args.no_cuda:
-
         device = torch.device("cuda" if torch.cuda.is_available() and not args.no_cuda else "cpu")
         args.n_gpu = 0 if args.no_cuda else torch.cuda.device_count()
 
