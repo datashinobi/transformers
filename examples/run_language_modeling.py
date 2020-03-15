@@ -778,8 +778,7 @@ def main():
 
     # Evaluation
     results = {}
-    torch.distributed.barrier()# wait for rank 0 to write checkpoints  
-    if args.do_eval and args.local_rank in [-1, 0]:
+    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):# evaluate on rank 0!
         checkpoints = [args.output_dir]
         if args.eval_all_checkpoints:
             checkpoints = list(
