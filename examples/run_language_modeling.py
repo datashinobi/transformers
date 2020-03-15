@@ -776,8 +776,6 @@ def main():
     # Evaluation
     results = {}
     if args.do_eval and args.local_rank in [-1, 0]:
-        torch.distributed.barrier() #wait for all nodes 
-
         checkpoints = [args.output_dir]
         if args.eval_all_checkpoints:
             checkpoints = list(
