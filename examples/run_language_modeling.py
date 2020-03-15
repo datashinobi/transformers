@@ -558,9 +558,9 @@ def main():
         "--evaluate_during_training", action="store_true", help="Run evaluation during training at each logging step."
     )
 
-    parser.add_argument("--per_gpu_train_batch_size", default=4, type=int, help="Batch size per GPU/CPU for training.")
+    parser.add_argument("--per_gpu_train_batch_size", default='4', type=str, help="Batch size per GPU/CPU for training.")
     parser.add_argument(
-        "--per_gpu_eval_batch_size", default=4, type=int, help="Batch size per GPU/CPU for evaluation."
+        "--per_gpu_eval_batch_size", default='4', type=str, help="Batch size per GPU/CPU for evaluation."
     )
     parser.add_argument(
         "--gradient_accumulation_steps",
@@ -623,6 +623,9 @@ def main():
     args = parser.parse_args()
 
     args.local_rank = int(args.local_rank)
+    args.per_gpu_train_batch_size = int(args.per_gpu_train_batch_size)
+    args.per_gpu_eval_batch_size = int(args.per_gpu_eval_batch_size)
+    
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
         raise ValueError(
             "BERT and RoBERTa-like models do not have LM heads but masked LM heads. They must be run using the --mlm "
