@@ -625,7 +625,7 @@ def main():
     args.local_rank = int(args.local_rank)
     args.per_gpu_train_batch_size = int(args.per_gpu_train_batch_size)
     args.per_gpu_eval_batch_size = int(args.per_gpu_eval_batch_size)
-    
+
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
         raise ValueError(
             "BERT and RoBERTa-like models do not have LM heads but masked LM heads. They must be run using the --mlm "
@@ -778,6 +778,7 @@ def main():
 
     # Evaluation
     results = {}
+    torch.distributed.barrier()# wait for rank 0 to write checkpoints  
     if args.do_eval and args.local_rank in [-1, 0]:
         checkpoints = [args.output_dir]
         if args.eval_all_checkpoints:
