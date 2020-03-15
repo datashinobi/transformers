@@ -210,7 +210,8 @@ def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args) -> T
     special_tokens_mask = [
         tokenizer.get_special_tokens_mask(val, already_has_special_tokens=True) for val in labels.tolist()
     ]
-    probability_matrix.masked_fill_(torch.tensor(special_tokens_mask, dtype=torch.bool), value=0.0)
+    #AML estimator up to 1.1 support https://github.com/huggingface/transformers/issues/1947 
+    probability_matrix.masked_fill_(torch.tensor(special_tokens_mask, dtype=torch.unint8), value=0.0)
     if tokenizer._pad_token is not None:
         padding_mask = labels.eq(tokenizer.pad_token_id)
         probability_matrix.masked_fill_(padding_mask, value=0.0)
