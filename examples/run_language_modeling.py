@@ -233,7 +233,7 @@ def mask_tokens(inputs: torch.Tensor, tokenizer: PreTrainedTokenizer, args) -> T
 def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedTokenizer) -> Tuple[int, float]:
     """ Train the model """
     if args.local_rank in [-1, 0]:
-        tb_writer = SummaryWriter()
+        tb_writer = SummaryWriter(log_dir=args.logs_dir,filename_suffix = f"rank_{torch.distributed.get_rank()}")
 
     args.train_batch_size = args.per_gpu_train_batch_size * max(1, args.n_gpu)
 
@@ -492,6 +492,12 @@ def main():
         type=str,
         required=True,
         help="The output directory where the model predictions and checkpoints will be written.",
+    )
+    parser.add_argument(
+        "--logs_dir",
+        type=str,
+        required=True,
+        help="The logs directory where tensorboard logs will be written.",
     )
     parser.add_argument(
         "--model_type", type=str, required=True, help="The model architecture to be trained or fine-tuned.",
@@ -778,7 +784,7 @@ def main():
 
     # Evaluation
     results = {}
-    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):# evaluate on rank 0!
+    if args.do_eval and (args.local_rank == -1 or torch.distributed.get_rank() == 0):# evaluate on rank 0
         checkpoints = [args.output_dir]
         if args.eval_all_checkpoints:
             checkpoints = list(
