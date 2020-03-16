@@ -493,7 +493,10 @@ def main():
         required=True,
         help="The output directory where the model predictions and checkpoints will be written.",
     )
-
+   
+    parser.add_argument(
+        "--model_type", type=str, required=True, help="The model architecture to be trained or fine-tuned.",
+    )
 
     # Other parameters
     parser.add_argument(
