@@ -242,7 +242,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
             return pad_sequence(examples, batch_first=True)
         return pad_sequence(examples, batch_first=True, padding_value=tokenizer.pad_token_id)
 
-    f args.local_rank == -1:
+    if args.local_rank == -1:
         train_sampler = RandomSampler(train_dataset) 
     else:
         train_sampler = DistributedSampler(train_dataset,num_replicas = args.world_size , rank = args.local_rank)
